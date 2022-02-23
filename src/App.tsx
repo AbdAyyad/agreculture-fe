@@ -1,26 +1,38 @@
 import React from 'react';
-import logo from './logo.svg';
+import {Container} from "react-bootstrap";
+import {BrowserRouter, Navigate, useRoutes} from 'react-router-dom';
 import './App.css';
+import identityService from "./services/IdentityService";
+import HomePage from "./pages/HomePage";
+import SignUpPage from "./pages/SignUpPage";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const isLoggedIn = identityService.isLoggedIn()
+    const routes = [
+        {
+            path: '/',
+            element: isLoggedIn ? <HomePage/> : <Navigate to={'/sign-up'}/>
+        },
+        {
+            path: '/sign-up',
+            element: !isLoggedIn ? <SignUpPage/> : <Navigate to={'/'}/>
+        },
+        {
+            path: '*',
+            element: <Navigate to={'/'}/>
+        }
+    ]
+    return useRoutes(routes)
 }
 
-export default App;
+const AppWrapper = () => {
+    return (
+        <BrowserRouter>
+            <Container fluid={true}>
+                <App/>
+            </Container>
+        </BrowserRouter>
+    );
+}
+
+export default AppWrapper;
